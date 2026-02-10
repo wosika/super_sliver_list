@@ -90,6 +90,7 @@ class SuperAnimateSliverList extends StatefulWidget {
   const SuperAnimateSliverList({
     super.key,
     required this.itemBuilder,
+    this.findChildIndexCallback,
     this.initialItemCount = 0,
     this.listController,
     this.extentEstimation,
@@ -112,6 +113,9 @@ class SuperAnimateSliverList extends StatefulWidget {
   /// Implementations of this callback should assume that
   /// `removeItem` removes an item immediately.
   final AnimatedItemBuilder itemBuilder;
+
+  /// {@macro flutter.widgets.SliverChildBuilderDelegate.findChildIndexCallback}
+  final ChildIndexGetter? findChildIndexCallback;
 
   /// The number of items the list will start with.
   ///
@@ -425,6 +429,12 @@ class SuperAnimateSliverListState extends State<SuperAnimateSliverList>
       delegate: SliverChildBuilderDelegate(
         _itemBuilder,
         childCount: _itemsCount,
+        findChildIndexCallback: widget.findChildIndexCallback == null
+            ? null
+            : (Key key) {
+                final int? index = widget.findChildIndexCallback!(key);
+                return index != null ? _indexToItemIndex(index) : null;
+              },
       ),
     );
   }
